@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<job maxFilesPerProcess="1" simulateSubmission="false" softLimits="true" fileListSyntax="xrootd">
+ 
+  <stdout discard="true" />
+
+  <command>
+    root4star -l -q -b 'Analysis.C("'"$FILELIST"'","'"$JOBID"'")' &gt;&amp; ${JOBID}.log
+  </command> 
+
+  <SandBox installer="ZIP">
+    <Package>
+      <File>file:/star/u/adams92/DstAnalysis/Analysis.xml</File>    <!-- Only so we can print it out ... done above -->
+      <File>file:/star/u/adams92/DstAnalysis/Analysis.C</File>      <!-- Required -->
+      <File>file:/star/u/adams92/DstAnalysis/StRoot</File>          <!-- Required -->
+      <File>file:/star/u/adams92/DstAnalysis/.sl73_gcc485</File>
+    </Package>
+  </SandBox>
+
+  <!--get_file_list.pl -keys 'path,filename' -cond trgsetupname=production_OO_200GeV_2021,filetype=daq_reco_MuDst,filename~st_physics,storage=nfs -limit 0 -delim-->
+  <input URL="catalog:star.bnl.gov?trgsetupname=production_OO_200GeV_2021,filetype=daq_reco_MuDst,filename~st_physics,storage=nfs,runnumber=22131040" preferStorage="local" singleCopy="true" nFiles="all" />
+
+  <stderr URL="file:/star/data03/pwg/adams92/DstAnalysis/SubmissionLogs/$JOBID.err"/>
+  <output fromScratch="*.log" toURL="file:/star/data03/pwg/adams92/DstAnalysis/SubmissionLogs/" />
+  <output fromScratch="*.root" toURL="file:/star/data03/pwg/adams92/DstAnalysis/RootFiles/" />
+
+  <Generator>
+    <Location>/star/data03/pwg/adams92/DstAnalysis/SubmissionLogs/</Location>
+    <ReportLocation>/star/data03/pwg/adams92/DstAnalysis/SubmissionLogs/</ReportLocation>
+  </Generator>
+
+</job>

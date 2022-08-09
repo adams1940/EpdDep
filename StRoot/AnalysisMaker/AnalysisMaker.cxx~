@@ -1,0 +1,151 @@
+#include "AnalysisMaker.h"
+#include "StRoot/StEvent/StEvent.h"
+#include "StRoot/St_base/StMessMgr.h"
+#include "StRoot/StEvent/StTriggerData.h"
+#include "StRoot/StMuDSTMaker/COMMON/StMuFcsCollection.h"
+#include "StRoot/StMuDSTMaker/COMMON/StMuFcsHit.h"
+#include "StRoot/StEvent/StEpdCollection.h"
+#include "StRoot/StEvent/StFcsHit.h"
+#include "StRoot/StEvent/StEpdHit.h"
+#include "StRoot/StFcsDbMaker/StFcsDb.h"
+#include "StRoot/StSpinPool/StFcsRawDaqReader/StFcsRawDaqReader.h"
+
+ClassImp(AnalysisMaker);
+
+AnalysisMaker::AnalysisMaker(StMaker * Maker, TString FileNameBase):StMaker("AnalysisMaker"){
+  m_FileNameBase = FileNameBase;
+  m_EventsStarted = 0;
+  m_EventsFinished = 0;
+  m_WriteRefMult = false;
+  m_WritePrimaryVertex = false;
+  m_WriteBField = false;
+
+  if( TString(Maker->IsA()->GetName()).EqualTo("StMuDstMaker") ){
+    m_MuDstMaker = (StMuDstMaker *)Maker;
+    m_IsPicoAnalysis = false;
+  }
+  if( TString(Maker->IsA()->GetName()).EqualTo("StPicoDstMaker") ){
+    m_PicoDstMaker = (StPicoDstMaker *)Maker;
+    m_IsPicoAnalysis = true;
+  }
+} // PicoDst Constructor
+
+AnalysisMaker::~AnalysisMaker(){
+} // Destructor
+
+int AnalysisMaker::Init(){
+  m_Event = new Event;
+  m_FemtoDstFile = new TFile(Form("%s.FemtoDst.root",m_FileNameBase.Data()),"recreate");
+  m_EventTree = new TTree("m_EventTree","Dst Events");
+    m_EventTree->Branch("m_Event","Event",&m_Event);   
+
+  return kStOK;
+} // Init
+
+int AnalysisMaker::Make(){
+  m_EventsStarted++;
+
+  int RefMult;
+  TVector3 PrimaryVertex;
+  StMuDst * MuDst;
+  StMuEvent MuEvent;
+  if( m_IsPicoAnalysis ){
+    StPicoEvent PicoEvent = *(m_PicoDstMaker->picoDst()->event());
+
+    RefMult = PicoEvent.refMult();
+    //PrimaryVertex = PicoEvent.primaryVertex();
+  } // m_IsPicoAnalysis
+  else{
+    MuDst = m_MuDstMaker->muDst();
+    MuEvent = *(m_MuDstMaker->muDst()->event());
+
+    RefMult = MuEvent.refMult();
+    //PrimaryVertex = StTVtoTV(MuEvent.primaryVertexPosition());
+  } // !m_IsPicoAnalysis
+
+  if( m_WriteRefMult ) m_Event->RefMult(RefMult);
+  if( m_WritePrimaryVertex ) m_Event->PrimaryVertex(PrimaryVertex);
+
+//  mFcsCollection=0;
+//  StTriggerData* trg=0;
+
+  //Getting StFcsRawDaqReader and TriggerData
+//  StFcsRawDaqReader* fcsraw=(StFcsRawDaqReader*)GetMaker("daqReader");
+//  StEvent* event= (StEvent*)GetInputDS("StEvent");
+//  if(fcsraw){
+//      //Getting trigger data (if daq file)
+//      trg = fcsraw->trgdata();
+//      if(!trg){
+//          LOG_INFO << "Canot find Trigger Data from StFcsRawDaqReader" << endm;
+//      }
+//  }else if(event){
+//      trg=event->triggerData();
+//      if(!trg){
+//          LOG_INFO << "Canot find Trigger Data from StEvent" << endm;
+//      }
+//  }
+
+ //mFcsDb = static_cast<StFcsDb*>(GetDataSet("fcsDb"));
+ 
+  StMuFcsCollection * FcsCollection = MuDst->muFcsCollection();
+  TClonesArray * Hits = FcsCollection->getHitArray();
+  cout<<"Hits: "<<Hits<<endl;
+  cout<<Hits->GetClass()->GetName()<<endl;
+  for( int iHit=0; iHit<Hits->GetEntriesFast(); iHit++ ){
+    StMuFcsHit * Hit = (StMuFcsHit *)(Hits->At(iHit));
+    if(Hit->detectorId() == 4 || Hit->detectorId()==5){
+      cout<<"----------------"<<endl;
+      cout<<"Det="<< Hit->detectorId()<<endl;
+      cout<<"Id ="<<Hit->id()<<endl;
+      cout<<"NTB="<<Hit->nTimeBin()<<endl;
+      int adcsum = 0;
+      for(int i=0; i<Hit->nTimeBin(); i++){	
+	int tb=Hit->timebin(i);
+	int adc=Hit->adc(i);
+	cout<<Form(" i=%3d tb=%4d adc=%4d\n",i,tb,adc);
+	if(47<=tb && tb<=54) adcsum += adc;
+      }
+      cout<<"SUM="<<adcsum<<endl;
+
+      cout<<Hit->adcSum()<<endl;
+      cout<<Hit->fitPeak()<<endl;
+      cout<<Hit->fitSigma()<<endl;
+      cout<<Hit->fitChi2()<<endl;
+      cout<<Hit->nPeak()<<endl;
+      cout<<Hit->energy()<<endl;
+    }
+  }
+
+   //mFcsCollection=event->fcsCollection();
+   //cout<<m_Event<<", "<<event<<", "<<fcsraw<<endl;
+//   for(int det=kFcsPresNorthDetId; det<kFcsNDet; det++){
+//     int nhit=mFcsCollection->numberOfHits(det);
+//     StSPtrVecFcsHit& hits = mFcsCollection->hits(det);
+//     for (int i=0; i<nhit; i++){
+//       int id  = hits[i]->id();
+//       int ns  = hits[i]->ns();
+//       int dep = hits[i]->dep();
+//       int ch  = hits[i]->channel();
+//       int pp,tt;
+//       mFcsDb->getEPDfromId(det,id,pp,tt);
+//       int QTcQRb = tt<=9?0:1;
+//     }
+//   }
+
+  m_EventTree->Fill();
+  m_EventsFinished++;
+  return kStOK;
+} // Make
+
+int AnalysisMaker::Finish(){
+  m_FemtoDstFile->cd();
+  m_EventTree->Write();
+  m_FemtoDstFile->Close();
+
+  cout<<m_EventsStarted<<" events started and "<<m_EventsFinished<<" events finished."<<endl; // Keep this line as is; OrganizeOutputFiles.sh will be looking for it
+  return kStOK;
+} // Finish
+
+TVector3 AnalysisMaker::StTVtoTV(StThreeVectorF StTV){
+  return TVector3(StTV.x(),StTV.y(),StTV.z());
+} // StTVtoTV
