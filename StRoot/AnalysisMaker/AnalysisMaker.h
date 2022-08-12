@@ -16,8 +16,8 @@
 #include "StPicoDstMaker/StPicoDstMaker.h"
 #include "StPicoEvent/StPicoDst.h"
 #include "StPicoEvent/StPicoEvent.h"
+//#include "StEvent/StFcsCollection.h"
 #include "StarClassLibrary/StThreeVector.hh"
-#include "StEventMaker/StEventMaker.h"
 // DstObjects
 #include "DstObjects/Event.h"
 #include "DstObjects/Particle.h"
@@ -50,12 +50,16 @@ private:
   TH1D * m__NumEpdCollectionsFound;
 
   StFcsDb *mFcsDb;
+//  StFcsCollection *mFcsCollection=0;
+//  StEpdCollection *mEpdCollection=0;
   int m_iHist;
 
 	StPicoDstMaker * m_PicoDstMaker;
 	StMuDstMaker * m_MuDstMaker;
-  StEventMaker * m_EventMaker;
   StPicoDst * m_PicoDst;
+
+  TTree * m_EventTree;
+  Event * m_Event;
 
   int m_EventsStarted, m_EventsFinished;
 
@@ -72,8 +76,6 @@ public:
   TVector3 StTVtoTV(StThreeVectorF StTV);
   void ReconstructLambdas();
   void getEPDfromId(int det, int id, int &pp, int &tt);
-
-  void RunEventAnalysis(TDataSet * Event_DataSet);
 
 ClassDef(AnalysisMaker,1)
 

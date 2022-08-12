@@ -18,8 +18,7 @@
   </SandBox>
 
   <!--get_file_list.pl -keys 'path,filename' -cond trgsetupname=production_OO_200GeV_2021,filetype=daq_reco_MuDst,filename~st_physics,storage=nfs -limit 0 -delim-->
-  <!--<input URL="catalog:star.bnl.gov?trgsetupname=production_OO_200GeV_2021,filetype=daq_reco_MuDst,filename~st_physics,storage=nfs,runnumber=22131040" preferStorage="local" singleCopy="true" nFiles="all" />-->
-  <input URL="filelist:/star/u/adams92/EpdDep/MuDst_single_restore.list" nFiles="all"/>
+  <input URL="catalog:star.bnl.gov?trgsetupname=production_pp500_2022,filetype=daq_reco_MuDst,filename=st_physics_22349014_raw_1500001.MuDst.root,runnumber=22349014" preferStorage="local" singleCopy="true" nFiles="all" />
 
   <stderr URL="file:/star/data03/pwg/adams92/DstAnalysis/SubmissionLogs/$JOBID.err"/>
   <output fromScratch="*.log" toURL="file:/star/data03/pwg/adams92/DstAnalysis/SubmissionLogs/" />
