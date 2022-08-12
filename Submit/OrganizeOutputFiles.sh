@@ -6,7 +6,7 @@ User="adams92"
 echo
 
 # The directories where generated files should appear
-DstAnalysisPwgDir=/star/data03/pwg/${User}/DstAnalysis
+DstAnalysisPwgDir=/star/data03/pwg/${User}/EpdDep
 SubmissionLogsDir=${DstAnalysisPwgDir}/SubmissionLogs
 AnalysisOutputDir=${DstAnalysisPwgDir}/RootFiles
 mkdir -p ${DstAnalysisPwgDir}

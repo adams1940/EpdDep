@@ -19,7 +19,7 @@ User="adams92"
 CommitHash=$1
 
 # Make the directories where output files will go
-DstAnalysisPwgDir=/star/data03/pwg/${User}/DstAnalysis
+DstAnalysisPwgDir=/star/data03/pwg/${User}/EpdDep
 SubmissionLogsDir=${DstAnalysisPwgDir}/SubmissionLogs
 AnalysisOutputDir=${DstAnalysisPwgDir}/RootFiles
 mkdir -p ${DstAnalysisPwgDir}
