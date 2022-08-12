@@ -18,8 +18,7 @@ void Analysis(TString InputFileList, TString OutputFileNameBase){
 
   Chain = new StChain("AChain");
   //StIOMaker *IOMk = new StIOMaker("IO","r",InputFileList.Data(),"bfcTree");
-  //StIOMaker *IOMk = new StIOMaker("IO","r","/star/u/adams92/EpdDep/EventFiles/st_physics_22349014_raw_1500001.event.root","bfcTree");
-  StIOMaker *IOMk = new StIOMaker("IO","r","/star/u/adams92/EpdDep/EventFiles/st_physics_22349014_raw_2000002.event.root","bfcTree");
+  StIOMaker *IOMk = new StIOMaker("IO","r","/star/data03/pwg/adams92/EpdDep/EventFiles/st_physics_22349014_raw_1500001.event.root","bfcTree");
 
   IOMk->SetDebug();
   IOMk->SetIOMode("r");
@@ -36,7 +35,7 @@ void Analysis(TString InputFileList, TString OutputFileNameBase){
   TDataSet *deventBranch=0;
   TDataSet *dde=0;
  
-  int nevents = 1000;
+  int nevents = 1e8;
     EventLoop: if (ijk <= nevents && istat!=2) {
        Chain->Clear();
        istat = Chain->Make(ijk);
