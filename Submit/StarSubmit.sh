@@ -33,7 +33,7 @@ echo "No we'll submit this job."
 sleep 1
 StarSubmitLogTemp=${SubmissionLogsDir}/StarSubmitLog_Temp.txt
 rm -rf ${StarSubmitLogTemp}
-star-submit /star/u/${User}/DstAnalysis/Submit/Analysis.xml | tee ${StarSubmitLogTemp}
+star-submit /star/u/${User}/EpdDep/Submit/Analysis.xml | tee ${StarSubmitLogTemp}
 
 # Check if the scheduling was successful and make subdirectories which link the CommitHash to the JobID and record the scheduling information
 StarSubmitLastLine=$(tail -n 1 ${StarSubmitLogTemp})
