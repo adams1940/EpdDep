@@ -10,10 +10,10 @@
 
   <SandBox installer="ZIP">
     <Package>
-      <File>file:/star/u/adams92/DstAnalysis/Analysis.xml</File>    <!-- Only so we can print it out ... done above -->
-      <File>file:/star/u/adams92/DstAnalysis/Analysis.C</File>      <!-- Required -->
-      <File>file:/star/u/adams92/DstAnalysis/StRoot</File>          <!-- Required -->
-      <File>file:/star/u/adams92/DstAnalysis/.sl73_gcc485</File>
+      <File>file:/star/u/adams92/EpdDep/Analysis.xml</File>    <!-- Only so we can print it out ... done above -->
+      <File>file:/star/u/adams92/EpdDep/Analysis.C</File>      <!-- Required -->
+      <File>file:/star/u/adams92/EpdDep/StRoot</File>          <!-- Required -->
+      <File>file:/star/u/adams92/EpdDep/.sl73_gcc485</File>
     </Package>
   </SandBox>
 
