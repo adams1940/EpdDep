@@ -1,33 +1,31 @@
 #include <TSystem>
+#include <iostream>
+#include <fstream>
 
 class StChain;
 StChain * Chain;
-void Analysis(TString InputFileList, TString OutputFileNameBase){
-  gROOT->LoadMacro("$STAR/StRoot/StMuDSTMaker/COMMON/macros/loadSharedLibraries.C");
-  loadSharedLibraries();
 
-  gSystem->Load("DstObjects");
+void Analysis(TString InputFileList="EventFilesPwg.list", TString OutputFileNameBase="test"){
+  ifstream infile(InputFileList.Data());
+  string file;
+  getline(infile,file);
+  TString FileName(file);
+  gROOT->LoadMacro("bfc.C");    // Load big "full" chain                                              
+  bfc(-1,"in epdHit",FileName.Data()); // Setup but do not init          
+
+  St_db_Maker *dbMk= (St_db_Maker*) chain->GetMaker("db");
+  if(dbMk){
+    dbMk->SetAttr("blacklist", "tpc"); dbMk->SetAttr("blacklist", "svt"); dbMk->SetAttr("blacklist", "ssd");
+    dbMk->SetAttr("blacklist", "ist"); dbMk->SetAttr("blacklist", "pxl"); dbMk->SetAttr("blacklist", "pp2pp");
+    dbMk->SetAttr("blacklist", "ftpc"); dbMk->SetAttr("blacklist", "emc"); dbMk->SetAttr("blacklist", "eemc");
+    dbMk->SetAttr("blacklist", "mtd"); dbMk->SetAttr("blacklist", "pmd"); dbMk->SetAttr("blacklist", "tof");
+    dbMk->SetAttr("blacklist", "etof");dbMk->SetAttr("blacklist", "rhicf");
+  }
+
   gSystem->Load("AnalysisMaker");
-  gSystem->Load("St_base");
-  gSystem->Load("StChain");
-  gSystem->Load("libglobal_Tables");
-  gSystem->Load("StUtilities");
-  gSystem->Load("StIOMaker");
-  gSystem->Load("StarClassLibrary");
-  gSystem->Load("StEvent");
-
-  Chain = new StChain("AChain");
-  //StIOMaker *IOMk = new StIOMaker("IO","r",InputFileList.Data(),"bfcTree");
-  StIOMaker *IOMk = new StIOMaker("IO","r","/star/data03/pwg/adams92/EpdDep/EventFiles/st_physics_22349014_raw_1500001.event.root","bfcTree");
-
-  IOMk->SetDebug();
-  IOMk->SetIOMode("r");
-  IOMk->SetBranch("*",0,"0");
-  IOMk->SetBranch("eventBranch",0,"r");
-
   AnalysisMaker * AnalysisCode = new AnalysisMaker(0,OutputFileNameBase.Data());
 
-  Chain->Init();
+  chain->Init();
 
   int istat=0;
   int ijk=1;
@@ -35,12 +33,12 @@ void Analysis(TString InputFileList, TString OutputFileNameBase){
   TDataSet *deventBranch=0;
   TDataSet *dde=0;
  
-  int nevents = 1e8;
+  int nevents = 1e9;
     EventLoop: if (ijk <= nevents && istat!=2) {
-       Chain->Clear();
-       istat = Chain->Make(ijk);
+       chain->Clear();
+       istat = chain->Make(ijk);
         if (!istat) {
-           deventBranch=Chain->GetDataSet("eventBranch");
+           deventBranch=chain->GetDataSet("eventBranch");
            TDataSetIter eventBIter(deventBranch);
            if (deventBranch) {
              while (dde=eventBIter.Next()) {
@@ -60,5 +58,5 @@ void Analysis(TString InputFileList, TString OutputFileNameBase){
        goto EventLoop;
    }
 
-  Chain->Finish();
+  chain->Finish();
 } // Analysis

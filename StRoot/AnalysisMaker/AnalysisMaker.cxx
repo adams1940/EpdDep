@@ -12,11 +12,12 @@
 #include "StRoot/StEvent/StEpdHit.h"
 #include "StRoot/StFcsDbMaker/StFcsDb.h"
 #include "StRoot/StSpinPool/StFcsRawDaqReader/StFcsRawDaqReader.h"
+#include "StEpdHitMaker/StEpdHitMaker.h"
 
 ClassImp(AnalysisMaker);
 
-AnalysisMaker::AnalysisMaker(StMaker * Maker, TString FileNameBase):StMaker("AnalysisMaker"){
-  m_iHist = 0;
+AnalysisMaker::AnalysisMaker(StMaker * Maker, TString FileNameBase) : StMaker("epdAna"){
+  m_Maker = Maker;
   m_FileNameBase = FileNameBase;
   m_EventsStarted = 0;
   m_EventsFinished = 0;
@@ -27,23 +28,22 @@ AnalysisMaker::~AnalysisMaker(){
 
 int AnalysisMaker::Init(){
   m_HistogramFile = new TFile(Form("%s.histograms.root",m_FileNameBase.Data()),"recreate");
-  for( int i=0; i<100; i++ ){
-    m_h1d_TimeBin_Adc_Hit[i] = new TH1D(Form("h1d_TimeBin_Adc_Hit%i",i),Form("Hit %i;Time Bin; ADC",i),101,-0.5,100.5);
-  }
   m_h2d_TTplus100PP_TimeBin_Adc_DEP = new TH2D("h2d_TTplus100PP_TimeBin_Adc_DEP",";TT+100*PP;Time Bin; ADC",1301,-0.5,1300.5,96,-0.5,95.5);
   m_h1d_TTplus100PP_Adc_QT = new TH1D("h1d_TTplus100PP_Adc_QT",";TT+100*PP;ADC",1301,-0.5,1300.5);
   for( int pp=1; pp<=12; pp++ ){
     for( int tt=0; tt<=31; tt++ ){
       m_h1d_AdcSum_NumHits_PP_TT_DEP[pp-1][tt] = new TH1D(Form("m_h1d_AdcSum_NumHits_PP%i_TT%i_DEP",pp,tt),Form("PP %i, TT %i, from DEP;#Sigma ADC;# hits",pp,tt),2048,-0.5,2047.5);
+      m_h2d_AdcQT_AdcSumDep_NumHits_PP_TT[pp-1][tt] = new TH2D(Form("m_h2d_AdcQT_AdcSumDep_NumHits_PP%i_TT%i_DEP",pp,tt),Form("PP %i, TT %i;ADC from QT;#Sigma ADC from DEP;# hits",pp,tt),513,-0.5,512.5,513,-0.5,512.5);
     }
   }
 
   m__NumEpdCollectionsFound = new TH1D("m__NumEpdCollectionsFound",";;# EpdCollections found",1,-1,1);
-
+  LOG_INFO << "!!!AnalysisMaker::Init!!!" << endm;
   return kStOK;
 } // Init
 
 int AnalysisMaker::Make(){
+  GetParentMaker()->SetDebug(0);
   return kStOK;
 } // Make
 
@@ -51,6 +51,13 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
   StEvent * Event = (StEvent *)Event_DataSet;
   StFcsCollection * FcsCollection = Event->fcsCollection();
 
+  float AdcDep[12][32], AdcQT[12][32];
+  for( int pp=1; pp<=12; pp++ ){
+    for( int tt=0; tt<=31; tt++ ){
+      AdcDep[pp-1][tt] = -1;
+      AdcQT[pp-1][tt] = -1;
+    }
+  }
 
   for(int det=kFcsPresNorthDetId; det<kFcsNDet; det++){
     int nhit=FcsCollection->numberOfHits(det);
@@ -69,18 +76,37 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
         unsigned int tb=Hit->timebin(i);
         unsigned int adc=Hit->adc(i);
         m_h2d_TTplus100PP_TimeBin_Adc_DEP->Fill(tt+100*pp,tb,adc);
-        if(m_iHist<100){
-          m_h1d_TimeBin_Adc_Hit[m_iHist]->Fill(tb,adc);
-        }
         if(47<=tb && tb<=54) adcsum += adc; //Triggered xing is TB=47~54
+        //cout<<adc<<endl;
       }
       m_h1d_AdcSum_NumHits_PP_TT_DEP[pp-1][tt]->Fill(adcsum);
+      AdcDep[pp-1][tt] = adcsum;
     }
   }
 
   StEpdCollection * EpdCollection = Event->epdCollection();
-  cout<<EpdCollection<<"<------------------------"<<endl;
-  if(Event->epdCollection()) m__NumEpdCollectionsFound->Fill(0.);
+  if(EpdCollection){
+    m__NumEpdCollectionsFound->Fill(0.);
+    LOG_INFO << "EPD nHit = " << EpdCollection->epdHits().size() << endm;
+  }else{
+    LOG_INFO<<"EpdCollection = "<<EpdCollection<<"  <------------------------ See! No epdCollection, but somehow it's there in the MuDst"<<endm;
+  }
+  int NumEpdHits = EpdCollection->epdHits().size();
+  for( int iHit=0; iHit<NumEpdHits; iHit++ ){
+    StEpdHit * Hit = (StEpdHit*)(EpdCollection->epdHits()[iHit]);
+    int pp = Hit->position(), tt = Hit->tile();
+    AdcQT[pp-1][tt] = Hit->adc();
+
+    //cout<<Hit->adc()<<endl;
+  }
+
+  for( int pp=1; pp<=12; pp++ ){
+    for( int tt=0; tt<=31; tt++ ){
+      if( AdcDep[pp-1][tt]>-1 && AdcQT[pp-1][tt]>-1 ){
+        m_h2d_AdcQT_AdcSumDep_NumHits_PP_TT[pp-1][tt]->Fill(AdcQT[pp-1][tt],AdcDep[pp-1][tt]);
+      }
+    }
+  }
 
 }
 
@@ -92,10 +118,6 @@ int AnalysisMaker::Finish(){
   cout<<m_EventsStarted<<" events started and "<<m_EventsFinished<<" events finished."<<endl; // Keep this line as is; OrganizeOutputFiles.sh will be looking for it
   return kStOK;
 } // Finish
-
-TVector3 AnalysisMaker::StTVtoTV(StThreeVectorF StTV){
-  return TVector3(StTV.x(),StTV.y(),StTV.z());
-} // StTVtoTV
 
 void AnalysisMaker::getEPDfromId(int det, int id, int &pp, int &tt){
     pp=-1; tt=-1;
