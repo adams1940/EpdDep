@@ -1,3 +1,4 @@
+#include "Riostream.h"
 #include <TSystem>
 #include <iostream>
 #include <fstream>
@@ -5,13 +6,15 @@
 class StChain;
 StChain * Chain;
 
-void Analysis(TString InputFileList="EventFilesPwg.list", TString OutputFileNameBase="test"){
-  ifstream infile(InputFileList.Data());
-  string file;
-  getline(infile,file);
-  TString FileName(file);
+void Analysis(TString InputFileList="/star/u/adams92/EpdDep/EventFilesPwg.list", TString OutputFileNameBase="test"){
+//  ifstream infile(InputFileList.Data());
+//  string file;
+//  getline(infile,file);
+//  TString FileName(file);
   gROOT->LoadMacro("bfc.C");    // Load big "full" chain                                              
-  bfc(-1,"in epdHit",FileName.Data()); // Setup but do not init          
+//  bfc(-1,"in epdHit",FileName.Data()); // Setup but do not init          
+  //bfc(-1,"in epdHit","/star/data03/pwg/adams92/EpdDep/EventFiles/st_physics_22349014_raw_1500001.event.root"); // Setup but do not init          
+  bfc(-1,"in epdHit",InputFileList); // Setup but do not init          
 
   St_db_Maker *dbMk= (St_db_Maker*) chain->GetMaker("db");
   if(dbMk){
