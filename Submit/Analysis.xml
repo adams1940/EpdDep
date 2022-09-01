@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<job maxFilesPerProcess="5" simulateSubmission="false" softLimits="true" fileListSyntax="xrootd">
+<job maxFilesPerProcess="2" simulateSubmission="false" softLimits="true" fileListSyntax="paths">
  
   <stdout discard="true" />
 
