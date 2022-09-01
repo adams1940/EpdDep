@@ -38,6 +38,8 @@ int AnalysisMaker::Init(){
   }
 
   m_h2d_AdcQT_AdcSumDep_NumHits = new TH2D("m_h2d_AdcQT_AdcSumDep_NumHits",";ADC from QT;#Sigma ADC from DEP;# hits",1024,-0.5,1023.5,4096,-0.5,4095.5);
+  m_h2d_AdcQTb_AdcSumDep_NumHits = new TH2D("m_h2d_AdcQTb_AdcSumDep_NumHits",";ADC from QTb;#Sigma ADC from DEP;# hits",1024,-0.5,1023.5,4096,-0.5,4095.5);
+  m_h2d_AdcQTc_AdcSumDep_NumHits = new TH2D("m_h2d_AdcQTc_AdcSumDep_NumHits",";ADC from QTc;#Sigma ADC from DEP;# hits",1024,-0.5,1023.5,4096,-0.5,4095.5);
 
   m_h1d_TTplus100PP_DEPnoQT = new TH1D("m_h1d_TTplus100PP_DEPnoQT","DEP hit but no QT hit",1301,-0.5,1300.5);
   m_h1d_TTplus100PP_QTnoDEP = new TH1D("m_h1d_TTplus100PP_QTnoDEP","QT hit but no DEP hit",1301,-0.5,1300.5);
@@ -112,6 +114,8 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
     for( int tt=0; tt<=31; tt++ ){
       if( AdcDep[pp-1][tt]>-1 && AdcQT[pp-1][tt]>-1 ){
         m_h2d_AdcQT_AdcSumDep_NumHits->Fill(AdcQT[pp-1][tt],AdcDep[pp-1][tt]);
+        if( tt>=10) m_h2d_AdcQTb_AdcSumDep_NumHits->Fill(AdcQT[pp-1][tt],AdcDep[pp-1][tt]);
+        if( tt<10) m_h2d_AdcQTc_AdcSumDep_NumHits->Fill(AdcQT[pp-1][tt],AdcDep[pp-1][tt]);
         m_h2d_AdcQT_AdcSumDep_NumHits_PP_TT[pp-1][tt]->Fill(AdcQT[pp-1][tt],AdcDep[pp-1][tt]);
       }
       if( AdcDep[pp-1][tt]>-1 && AdcQT[pp-1][tt]==-1 ) m_h1d_TTplus100PP_DEPnoQT->Fill(tt+100*pp);
