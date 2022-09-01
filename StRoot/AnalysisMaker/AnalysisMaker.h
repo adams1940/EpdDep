@@ -46,6 +46,11 @@ private:
   TH2D * m_h2d_AdcQT_AdcSumDep_NumHits_PP_TT[12][32];
   TH2D * m_h2d_AdcQT_AdcSumDep_NumHits;
 
+  TH1D * m_h1d_TTplus100PP_DEPnoQT;
+  TH1D * m_h1d_TTplus100PP_QTnoDEP;
+  TH1D * m_h1d_TTplus100PP_DEPandQT;
+  TH1D * m_h1d_TTplus100PP_noDEPnoQT;
+
   int m_EventsStarted, m_EventsFinished;
 
 public:
