@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<job maxFilesPerProcess="1" simulateSubmission="false" softLimits="true" fileListSyntax="xrootd">
+<job maxFilesPerProcess="5" simulateSubmission="false" softLimits="true" fileListSyntax="xrootd">
  
   <stdout discard="true" />
 
@@ -18,7 +18,7 @@
   </SandBox>
 
   <!--get_file_list.pl -keys 'path,filename' -cond trgsetupname=production_OO_200GeV_2021,filetype=daq_reco_MuDst,filename~st_physics,storage=nfs -limit 0 -delim-->
-  <input URL="catalog:star.bnl.gov?trgsetupname=production_pp500_2022,filetype=daq_reco_Event,filename~st_physics" preferStorage="local" singleCopy="true" nFiles="all" />
+  <input URL="catalog:star.bnl.gov?trgsetupname=production_pp500_2022,filetype=daq_reco_Event,filename~st_physics,storage=nfs" preferStorage="local" singleCopy="true" nFiles="all" />
 
   <stderr URL="file:/star/data03/pwg/adams92/DstAnalysis/SubmissionLogs/$JOBID.err"/>
   <output fromScratch="*.log" toURL="file:/star/data03/pwg/adams92/DstAnalysis/SubmissionLogs/" />
