@@ -37,6 +37,8 @@ int AnalysisMaker::Init(){
     }
   }
 
+  m_h2d_AdcQT_AdcSumDep_NumHits = new TH2D("m_h2d_AdcQT_AdcSumDep_NumHits",";ADC from QT;#Sigma ADC from DEP;# hits",1024,-0.5,1023.5,4096,-0.5,4095.5);
+
   m__NumEpdCollectionsFound = new TH1D("m__NumEpdCollectionsFound",";;# EpdCollections found",1,-1,1);
   LOG_INFO << "!!!AnalysisMaker::Init!!!" << endm;
   return kStOK;
@@ -63,7 +65,6 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
     int nhit=FcsCollection->numberOfHits(det);
     if(nhit<=0) continue;
     StSPtrVecFcsHit& FcsHits = FcsCollection->hits(det);
-    int adcsum = 0;
     for (int i=0; i<nhit; i++){
       StFcsHit * Hit = FcsHits[i];
       int id  = Hit->id();
@@ -72,6 +73,7 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
       int ch  = Hit->channel();
       int pp,tt;
       getEPDfromId(Hit->detectorId(),Hit->id(),pp,tt);
+      int adcsum = 0;
       for(unsigned int i=0; i<Hit->nTimeBin(); i++){	
         unsigned int tb=Hit->timebin(i);
         unsigned int adc=Hit->adc(i);
@@ -94,6 +96,7 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
   int NumEpdHits = EpdCollection->epdHits().size();
   for( int iHit=0; iHit<NumEpdHits; iHit++ ){
     StEpdHit * Hit = (StEpdHit*)(EpdCollection->epdHits()[iHit]);
+    if( Hit->side()<0 ) continue;
     int pp = Hit->position(), tt = Hit->tile();
     AdcQT[pp-1][tt] = Hit->adc();
 
@@ -101,8 +104,9 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
   }
 
   for( int pp=1; pp<=12; pp++ ){
-    for( int tt=0; tt<=31; tt++ ){
-      if( AdcDep[pp-1][tt]>-1 && AdcQT[pp-1][tt]>-1 ){
+    for( int tt=10; tt<=31; tt++ ){
+      if( AdcDep[pp-1][tt]>0 && AdcQT[pp-1][tt]>-1 ){
+        m_h2d_AdcQT_AdcSumDep_NumHits->Fill(AdcQT[pp-1][tt],AdcDep[pp-1][tt]);
         m_h2d_AdcQT_AdcSumDep_NumHits_PP_TT[pp-1][tt]->Fill(AdcQT[pp-1][tt],AdcDep[pp-1][tt]);
       }
     }
