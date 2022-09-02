@@ -48,6 +48,8 @@ private:
   TH2D * m_h2d_AdcQTb_AdcSumDep_NumHits;
   TH2D * m_h2d_AdcQTc_AdcSumDep_NumHits;
 
+  TH2D * m_h2d_PMT_EW_ADC_VPD;
+
   TH1D * m_h1d_TTplus100PP_DEPnoQT;
   TH1D * m_h1d_TTplus100PP_QTnoDEP;
   TH1D * m_h1d_TTplus100PP_DEPandQT;

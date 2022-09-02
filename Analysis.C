@@ -12,7 +12,7 @@ void Analysis(TString InputFileList="EventFilesPwg.list", TString OutputFileName
   TString FileName(file);
   gROOT->LoadMacro("bfc.C");    // Load big "full" chain                                              
   const Char_t * filelist = FileName.Data();
-  bfc(-1,"in epdHit",filelist); // Setup but do not init          
+  bfc(-1,"in epdHit ZDCvtx trgd",filelist); // Setup but do not init          
 
   St_db_Maker *dbMk= (St_db_Maker*) chain->GetMaker("db");
   if(dbMk){
@@ -34,7 +34,7 @@ void Analysis(TString InputFileList="EventFilesPwg.list", TString OutputFileName
   TDataSet *deventBranch=0;
   TDataSet *dde=0;
  
-  int nevents = 1e9;
+  int nevents = 10;
     EventLoop: if (ijk <= nevents && istat!=2) {
        chain->Clear();
        istat = chain->Make(ijk);

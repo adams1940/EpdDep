@@ -2,6 +2,7 @@
 #include "StRoot/StEvent/StEvent.h"
 #include "StRoot/StEvent/StFcsCollection.h"
 #include "StRoot/StEvent/StEpdCollection.h"
+#include "StRoot/StEvent/StTpcHitCollection.h"
 #include "StRoot/StEvent/StEpdHit.h"
 #include "StRoot/St_base/StMessMgr.h"
 #include "StRoot/StEvent/StTriggerData.h"
@@ -45,6 +46,8 @@ int AnalysisMaker::Init(){
   m_h1d_TTplus100PP_QTnoDEP = new TH1D("m_h1d_TTplus100PP_QTnoDEP","QT hit but no DEP hit;TT+100*PP;# hits",1301,-0.5,1300.5);
   m_h1d_TTplus100PP_DEPandQT = new TH1D("m_h1d_TTplus100PP_DEPandQT","DEP and QT hit;TT+100*PP;# hits",1301,-0.5,1300.5);
   m_h1d_TTplus100PP_noDEPnoQT = new TH1D("m_h1d_TTplus100PP_noDEPnoQT","no DEP or QT hit;TT+100*PP;# hits",1301,-0.5,1300.5);
+
+  m_h2d_PMT_EW_ADC_VPD = new TH2D("m_h2d_PMT_EW_ADC_VPD","VPD;PMT;EW;ADC",25,-0.5,24.5,2,-0.5,1.5);
 
   m__NumEpdCollectionsFound = new TH1D("m__NumEpdCollectionsFound",";;# EpdCollections found",1,-1,1);
   LOG_INFO << "!!!AnalysisMaker::Init!!!" << endm;
@@ -93,13 +96,14 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
     }
   }
 
-  StEpdCollection * EpdCollection = Event->epdCollection();
-  if(EpdCollection){
-    m__NumEpdCollectionsFound->Fill(0.);
-    LOG_INFO << "EPD nHit = " << EpdCollection->epdHits().size() << endm;
-  }else{
-    LOG_INFO<<"EpdCollection = "<<EpdCollection<<"  <------------------------ See! No epdCollection, but somehow it's there in the MuDst"<<endm;
+  for( int ew=0; ew<2; ew++ ){
+    for(int pmt=0; pmt<=24; pmt++ ){
+      m_h2d_PMT_EW_ADC_VPD->Fill(pmt,ew,Event->triggerData()->vpdADC(StBeamDirection(ew),pmt,0));
+    }
   }
+
+  StEpdCollection * EpdCollection = Event->epdCollection();
+  if(EpdCollection) m__NumEpdCollectionsFound->Fill(0.);
   int NumEpdHits = EpdCollection->epdHits().size();
   for( int iHit=0; iHit<NumEpdHits; iHit++ ){
     StEpdHit * Hit = (StEpdHit*)(EpdCollection->epdHits()[iHit]);
