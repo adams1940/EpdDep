@@ -41,10 +41,10 @@ int AnalysisMaker::Init(){
   m_h2d_AdcQTb_AdcSumDep_NumHits = new TH2D("m_h2d_AdcQTb_AdcSumDep_NumHits",";ADC from QTb;#Sigma ADC from DEP;# hits",1024,-0.5,1023.5,4096,-0.5,4095.5);
   m_h2d_AdcQTc_AdcSumDep_NumHits = new TH2D("m_h2d_AdcQTc_AdcSumDep_NumHits",";ADC from QTc;#Sigma ADC from DEP;# hits",1024,-0.5,1023.5,4096,-0.5,4095.5);
 
-  m_h1d_TTplus100PP_DEPnoQT = new TH1D("m_h1d_TTplus100PP_DEPnoQT","DEP hit but no QT hit",1301,-0.5,1300.5);
-  m_h1d_TTplus100PP_QTnoDEP = new TH1D("m_h1d_TTplus100PP_QTnoDEP","QT hit but no DEP hit",1301,-0.5,1300.5);
-  m_h1d_TTplus100PP_DEPandQT = new TH1D("m_h1d_TTplus100PP_DEPandQT","DEP and QT hit",1301,-0.5,1300.5);
-  m_h1d_TTplus100PP_noDEPnoQT = new TH1D("m_h1d_TTplus100PP_noDEPnoQT","no DEP or QT hit",1301,-0.5,1300.5);
+  m_h1d_TTplus100PP_DEPnoQT = new TH1D("m_h1d_TTplus100PP_DEPnoQT","DEP hit but no QT hit;TT+100*PP;# hits",1301,-0.5,1300.5);
+  m_h1d_TTplus100PP_QTnoDEP = new TH1D("m_h1d_TTplus100PP_QTnoDEP","QT hit but no DEP hit;TT+100*PP;# hits",1301,-0.5,1300.5);
+  m_h1d_TTplus100PP_DEPandQT = new TH1D("m_h1d_TTplus100PP_DEPandQT","DEP and QT hit;TT+100*PP;# hits",1301,-0.5,1300.5);
+  m_h1d_TTplus100PP_noDEPnoQT = new TH1D("m_h1d_TTplus100PP_noDEPnoQT","no DEP or QT hit;TT+100*PP;# hits",1301,-0.5,1300.5);
 
   m__NumEpdCollectionsFound = new TH1D("m__NumEpdCollectionsFound",";;# EpdCollections found",1,-1,1);
   LOG_INFO << "!!!AnalysisMaker::Init!!!" << endm;
@@ -130,7 +130,6 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
 int AnalysisMaker::Finish(){
   m_HistogramFile->Write();
   m_HistogramFile->Close();
-
 
   cout<<m_EventsStarted<<" events started and "<<m_EventsFinished<<" events finished."<<endl; // Keep this line as is; OrganizeOutputFiles.sh will be looking for it
   return kStOK;
