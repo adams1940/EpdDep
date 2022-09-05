@@ -34,6 +34,7 @@ int AnalysisMaker::Init(){
   for( int pp=1; pp<=12; pp++ ){
     for( int tt=0; tt<=31; tt++ ){
       m_h1d_AdcSum_NumHits_PP_TT_DEP[pp-1][tt] = new TH1D(Form("m_h1d_AdcSum_NumHits_PP%i_TT%i_DEP",pp,tt),Form("PP %i, TT %i, from DEP;#Sigma ADC;# hits",pp,tt),2048,-0.5,2047.5);
+      m_h1d_AdcSum_NumHits_PP_TT_QT[pp-1][tt] = new TH1D(Form("m_h1d_AdcSum_NumHits_PP%i_TT%i_QT",pp,tt),Form("PP %i, TT %i, from QT;#Sigma ADC;# hits",pp,tt),1024,-0.5,1023.5);
       m_h2d_AdcQT_AdcSumDep_NumHits_PP_TT[pp-1][tt] = new TH2D(Form("m_h2d_AdcQT_AdcSumDep_NumHits_PP%i_TT%i_DEP",pp,tt),Form("PP %i, TT %i;ADC from QT;#Sigma ADC from DEP;# hits",pp,tt),513,-0.5,512.5,513,-0.5,512.5);
     }
   }
@@ -96,6 +97,8 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
     }
   }
 
+
+
   for( int ew=0; ew<2; ew++ ){
     for(int pmt=0; pmt<=24; pmt++ ){
       m_h2d_PMT_EW_ADC_VPD->Fill(pmt,ew,Event->triggerData()->vpdADC(StBeamDirection(ew),pmt,0));
@@ -109,7 +112,9 @@ void AnalysisMaker::RunEventAnalysis(TDataSet * Event_DataSet){
     StEpdHit * Hit = (StEpdHit*)(EpdCollection->epdHits()[iHit]);
     if( Hit->side()<0 ) continue;
     int pp = Hit->position(), tt = Hit->tile();
-    AdcQT[pp-1][tt] = Hit->adc();
+    float adc = Hit->adc();
+    AdcQT[pp-1][tt] = adc;
+    m_h1d_AdcSum_NumHits_PP_TT_QT[pp-1][tt]->Fill(adc);
 
     //cout<<Hit->adc()<<endl;
   }

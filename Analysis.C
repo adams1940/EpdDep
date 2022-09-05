@@ -34,7 +34,7 @@ void Analysis(TString InputFileList="EventFilesPwg.list", TString OutputFileName
   TDataSet *deventBranch=0;
   TDataSet *dde=0;
  
-  int nevents = 10;
+  int nevents = 1e6;
     EventLoop: if (ijk <= nevents && istat!=2) {
        chain->Clear();
        istat = chain->Make(ijk);
