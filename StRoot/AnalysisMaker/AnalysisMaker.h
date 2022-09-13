@@ -43,7 +43,8 @@ private:
   TH2D * m_h2d_TTplus100PP_TimeBin_Adc_DEP;
   TH1D * m_h1d_TTplus100PP_Adc_QT;
   TH1D * m_h1d_AdcSum_NumHits_PP_TT_DEP[12][32];
-  TH1D * m_h1d_AdcSum_NumHits_PP_TT_QT[12][32];
+  TH1D * m_h1d_AdcSum_NumHits_PP_TT_QT_West[12][32];
+  TH1D * m_h1d_AdcSum_NumHits_PP_TT_QT_East[12][32];
   TH2D * m_h2d_AdcQT_AdcSumDep_NumHits_PP_TT[12][32];
   TH2D * m_h2d_AdcQT_AdcSumDep_NumHits;
   TH2D * m_h2d_AdcQTb_AdcSumDep_NumHits;
