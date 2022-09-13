@@ -32,8 +32,9 @@ void FitAdcDistributions(){
       MyLandau_DEP->SetParameter(2,EstWid);
       MyLandau_DEP->SetParameter(3,.1*EstMax);
       MyLandau_DEP->SetParameter(4,2.*EstMpv);
-      MyLandau_DEP->SetParLimits(4,1.5*EstMpv,3*EstMpv);
+      MyLandau_DEP->SetParLimits(4,1.6*EstMpv,2.5*EstMpv);
       MyLandau_DEP->SetParameter(5,1.*EstWid);
+      MyLandau_DEP->SetParLimits(5,0.1*EstWid,3*EstWid);
       m_h1d_AdcSum_NumHits_PP_TT_DEP[pp-1][tt]->GetXaxis()->UnZoom();
       m_h1d_AdcSum_NumHits_PP_TT_DEP[pp-1][tt]->Fit("MyLandau_DEP","Q","",EstMpv-130,2000);
       gPad->SetLogy();
@@ -55,6 +56,7 @@ void FitAdcDistributions(){
         tf1_AdcSum_NumHits_PP_TT_DEP_FitResult_SecondPeak->SetFillColorAlpha(kBlue,0.5);
         tf1_AdcSum_NumHits_PP_TT_DEP_FitResult_SecondPeak->SetFillStyle(1001);
         tf1_AdcSum_NumHits_PP_TT_DEP_FitResult_SecondPeak->Draw("same");
+
       }
 
       TF1 *MyLandau_QT = new TF1("MyLandau_QT","[0]*TMath::Landau(x,[1],[2])+[3]*TMath::Landau(x,[4],[5])",0,1e6);
@@ -64,15 +66,15 @@ void FitAdcDistributions(){
       m_h1d_AdcSum_NumHits_PP_TT_QT[pp-1][tt]->GetXaxis()->SetRangeUser(69,300);
       EstMax = 5.*m_h1d_AdcSum_NumHits_PP_TT_QT[pp-1][tt]->GetMaximum();
       EstMpv = m_h1d_AdcSum_NumHits_PP_TT_QT[pp-1][tt]->GetBinCenter(m_h1d_AdcSum_NumHits_PP_TT_QT[pp-1][tt]->GetMaximumBin());
-      EstWid = 50;
+      EstWid = 20;
       MyLandau_QT->SetParameter(0,EstMax);
       MyLandau_QT->SetParameter(1,EstMpv);
       MyLandau_QT->SetParameter(2,EstWid);
-      MyLandau_QT->SetParameter(3,.1*EstMax);
-      MyLandau_QT->SetParLimits(3,.01*EstMax,.8*EstMax);
+      MyLandau_QT->SetParameter(3,.05*EstMax);
       MyLandau_QT->SetParameter(4,2.*EstMpv);
-      MyLandau_QT->SetParLimits(4,1.5*EstMpv,3*EstMpv);
+      MyLandau_QT->SetParLimits(4,1.6*EstMpv,2.5*EstMpv);
       MyLandau_QT->SetParameter(5,1.*EstWid);
+      MyLandau_QT->SetParLimits(5,0.1*EstWid,3*EstWid);
       m_h1d_AdcSum_NumHits_PP_TT_QT[pp-1][tt]->GetXaxis()->UnZoom();
       m_h1d_AdcSum_NumHits_PP_TT_QT[pp-1][tt]->Fit("MyLandau_QT","Q","",EstMpv-35,1000);
       gPad->SetLogy();
